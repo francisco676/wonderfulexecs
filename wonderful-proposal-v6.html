@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RallyUp × Wonderful · State of Authority + Pilot</title>
+<meta name="description" content="A two-stage engagement to map the strategic playbook for Wonderful's GMs, then run the pilot with one." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --blue:#3d68f5;
+    --blue-dark:#2a3ad8;
+    --yellow:#DDFF4D;
+    --ink:#0b1020;
+    --gray:#6b7280;
+    --bg:#ffffff;
+    --bg-soft:#f7f8fb;
+    --line:#e7e9ef;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;scroll-behavior:smooth}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    background:var(--bg);color:var(--ink);
+    -webkit-font-smoothing:antialiased;line-height:1.5;
+    font-feature-settings:"ss01","cv11";
+  }
+  ::selection{background:var(--yellow);color:var(--ink)}
+
+  /* Layout: sidebar + main */
+  .page-layout{
+    display:grid;
+    grid-template-columns:260px 1fr;
+    align-items:start;
+    min-height:100vh;
+  }
+
+  /* Sidebar */
+  .sidebar{
+    position:sticky;
+    top:0;
+    height:100vh;
+    padding:32px 24px 28px 32px;
+    border-right:1px solid var(--line);
+    background:var(--bg);
+    display:flex;
+    flex-direction:column;
+    z-index:10;
+  }
+  .sidebar-brand{
+    display:flex;align-items:center;gap:10px;
+    font-weight:800;font-size:16px;letter-spacing:-0.02em;color:var(--ink);
+    margin-bottom:6px;
+  }
+  .sidebar-brand .dot{width:8px;height:8px;border-radius:999px;background:var(--blue);box-shadow:0 0 0 4px rgba(61,104,245,.12)}
+  .sidebar-sub{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);
+    margin-bottom:32px;padding-left:18px;
+  }
+  .sidebar-label{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);
+    margin-bottom:12px;font-weight:500;
+  }
+  .sidebar nav{
+    display:flex;flex-direction:column;gap:1px;
+    flex:1;min-height:0;overflow-y:auto;
+    margin:0 -8px;padding:0 8px;
+  }
+  .sidebar nav::-webkit-scrollbar{width:0}
+  .sidebar nav a{
+    display:flex;align-items:center;gap:12px;
+    padding:9px 10px;
+    font-size:13px;color:var(--gray);text-decoration:none;
+    border-radius:8px;font-weight:500;
+    transition:color .18s ease, background .18s ease;
+    position:relative;
+  }
+  .sidebar nav a .num{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.04em;
+    color:var(--gray);width:14px;flex-shrink:0;text-align:right;
+    transition:color .18s ease;
+  }
+  .sidebar nav a .label{flex:1;line-height:1.3}
+  .sidebar nav a:hover{color:var(--ink);background:var(--bg-soft)}
+  .sidebar nav a:hover .num{color:var(--ink)}
+  .sidebar nav a.active{
+    color:var(--ink);
+    background:var(--bg-soft);
+    font-weight:600;
+  }
+  .sidebar nav a.active .num{color:var(--blue);font-weight:700}
+  .sidebar nav a.active::after{
+    content:"";
+    position:absolute;left:0;top:50%;transform:translateY(-50%);
+    width:3px;height:18px;background:var(--blue);border-radius:0 3px 3px 0;
+    margin-left:-8px;
+  }
+
+  /* Progress block */
+  .progress-block{
+    margin-top:20px;padding-top:20px;border-top:1px solid var(--line);
+  }
+  .progress-text{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:10px;font-weight:500;
+  }
+  .progress-text .pct{color:var(--ink);font-weight:600}
+  .progress-bar{
+    height:3px;background:var(--line);border-radius:999px;overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;background:var(--blue);border-radius:999px;
+    width:0%;transition:width .15s linear;
+  }
+
+  /* Main column */
+  .main{min-width:0}
+  .wrap{max-width:920px;margin:0 auto;padding:0 28px}
+
+  /* Top header */
+  header.top{
+    padding:32px 0 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:18px;
+  }
+  .brand-mobile{font-weight:800;font-size:16px;letter-spacing:-0.02em;color:var(--ink);display:none;align-items:center;gap:10px}
+  .brand-mobile .dot{width:7px;height:7px;border-radius:999px;background:var(--blue)}
+  .meta{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray)}
+
+  /* For-brand chip in top bar */
+  .for-brand{display:inline-flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:999px;background:var(--bg-soft);border:1px solid var(--line)}
+  .for-brand .for-brand-orb{width:28px;height:28px;border-radius:999px;display:block;flex-shrink:0;object-fit:cover}
+  .for-brand .for-brand-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);font-weight:500}
+  .for-brand .for-brand-name{font-family:'Inter',sans-serif;font-weight:800;font-size:14px;letter-spacing:-0.02em;color:var(--ink)}
+
+  .program-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--bg-soft);border:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);font-weight:500;margin-bottom:18px}
+  .program-tag::before{content:"";width:6px;height:6px;border-radius:999px;background:var(--blue)}
+
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);display:inline-flex;align-items:center;gap:8px;margin-bottom:18px}
+  .eyebrow::before{content:"";width:18px;height:1px;background:var(--blue);display:inline-block}
+
+  .hero{padding:40px 0 64px;border-bottom:1px solid var(--line);scroll-margin-top:20px}
+  h1{font-family:'Inter',sans-serif;font-weight:800;font-size:clamp(40px,6vw,68px);line-height:1.04;letter-spacing:-0.04em;color:var(--blue-dark);margin:0 0 28px}
+  h1 em,.em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--ink);background:linear-gradient(180deg,transparent 65%,var(--yellow) 65%,var(--yellow) 92%,transparent 92%);padding:0 .04em}
+  .lede{font-size:20px;color:var(--ink);max-width:720px;line-height:1.5;font-weight:400}
+  .lede .soft{color:var(--gray);display:block;margin-top:14px;font-size:18px}
+
+  section{padding:72px 0 48px;border-bottom:1px solid var(--line);scroll-margin-top:20px}
+  h2{font-family:'Inter',sans-serif;font-weight:800;font-size:clamp(30px,4vw,46px);line-height:1.06;letter-spacing:-0.03em;color:var(--blue-dark);margin:0 0 24px;max-width:780px}
+  h2 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--ink);background:linear-gradient(180deg,transparent 65%,var(--yellow) 65%,var(--yellow) 92%,transparent 92%);padding:0 .04em}
+  p.body{font-size:17px;color:var(--ink);max-width:720px;line-height:1.6}
+  p.body+p.body{margin-top:16px}
+  p.body .soft{color:var(--gray)}
+  p.body strong{font-weight:700;color:var(--ink)}
+  p.body em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400}
+
+  /* Pull quote */
+  .pullquote{margin-top:32px;padding:32px 36px;border-left:3px solid var(--ink);background:var(--bg-soft);border-radius:0 16px 16px 0;max-width:720px}
+  .pullquote p{margin:0;font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:24px;line-height:1.4;color:var(--ink)}
+  .pullquote cite{display:block;margin-top:14px;font-style:normal;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray)}
+
+  /* Two stages */
+  .stages{margin-top:48px;display:grid;grid-template-columns:1fr 1fr;gap:24px;position:relative}
+  .stage{padding:36px 32px;background:#fff;border:1px solid var(--line);border-radius:24px;position:relative}
+  .stage .stage-num{position:absolute;top:-14px;left:32px;background:var(--ink);color:var(--yellow);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;border-radius:999px;font-weight:700}
+  .stage h3{font-family:'Inter',sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.02em;color:var(--blue-dark);margin:8px 0 8px;line-height:1.2}
+  .stage h3 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--ink);background:linear-gradient(180deg,transparent 65%,var(--yellow) 65%,var(--yellow) 92%,transparent 92%);padding:0 .04em}
+  .stage .what{font-size:14px;color:var(--gray);line-height:1.5;margin-bottom:14px}
+  .stage .stage-tagline{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:600;display:flex;align-items:center;gap:8px}
+  .stage .stage-tagline::before{content:"✓";color:var(--blue);font-family:'Inter',sans-serif;font-weight:800;font-size:12px}
+  @media (max-width:760px){.stages{grid-template-columns:1fr}}
+
+  /* Commitment banner */
+  .commit-banner{
+    margin-top:28px;padding:22px 28px;
+    background:var(--ink);color:#fff;border-radius:16px;
+    display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+    position:relative;overflow:hidden;
+  }
+  .commit-banner::before{
+    content:"";position:absolute;top:-40px;right:-40px;width:140px;height:140px;
+    background:radial-gradient(circle,rgba(221,255,77,0.15) 0%,transparent 70%);border-radius:50%;
+  }
+  .commit-icon{
+    width:36px;height:36px;border-radius:999px;background:var(--yellow);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    font-family:'Inter',sans-serif;font-weight:800;color:var(--ink);font-size:18px;
+    position:relative;
+  }
+  .commit-text{flex:1;min-width:240px;position:relative}
+  .commit-text strong{display:block;font-weight:700;font-size:16px;color:#fff;margin-bottom:4px;letter-spacing:-0.01em}
+  .commit-text span{font-size:14px;color:rgba(255,255,255,0.78);line-height:1.5}
+
+  /* Principle card */
+  .principle-card{margin-top:32px;background:var(--ink);color:#fff;border-radius:24px;padding:40px 44px;max-width:780px;position:relative;overflow:hidden}
+  .principle-card::before{content:"";position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(221,255,77,0.15) 0%,transparent 70%);border-radius:50%}
+  .principle-card .label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--yellow);margin-bottom:14px;position:relative}
+  .principle-card .principle{font-family:'Inter',sans-serif;font-weight:800;font-size:clamp(24px,3vw,32px);line-height:1.25;letter-spacing:-0.02em;color:#fff;margin-bottom:14px;position:relative}
+  .principle-card .principle em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--yellow);background:none;padding:0}
+  .principle-card .sub{font-size:15px;color:rgba(255,255,255,0.78);line-height:1.6;position:relative;max-width:620px}
+
+  /* Pillars */
+  .pillars{margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .pillar{padding:32px 28px;background:#fff;border:1px solid var(--line);border-radius:18px;transition:border-color .2s ease}
+  .pillar:hover{border-color:var(--ink)}
+  .pillar .num{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:32px;line-height:1;color:var(--blue);margin-bottom:14px}
+  .pillar h3{font-family:'Inter',sans-serif;font-weight:700;font-size:18px;letter-spacing:-0.015em;color:var(--ink);margin:0 0 10px;line-height:1.3}
+  .pillar h3 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;background:linear-gradient(180deg,transparent 65%,var(--yellow) 65%,var(--yellow) 92%,transparent 92%);padding:0 .04em}
+  .pillar p{margin:0;font-size:14px;color:var(--gray);line-height:1.55}
+  @media (max-width:680px){.pillars{grid-template-columns:1fr}}
+
+  /* Authority deliverables card */
+  .deliverables-card{margin-top:32px;padding:36px 40px;background:#fff;border:1px solid var(--ink);border-radius:24px;max-width:780px}
+  .deliverables-card .label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:18px}
+  .deliverables-card ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:18px}
+  .deliverables-card li{padding-left:28px;position:relative;font-size:16px;color:var(--ink);line-height:1.5}
+  .deliverables-card li::before{content:"";position:absolute;left:0;top:8px;width:8px;height:8px;border-radius:999px;background:var(--yellow);box-shadow:0 0 0 3px rgba(221,255,77,.3)}
+  .deliverables-card li strong{font-weight:700;color:var(--ink);display:block;margin-bottom:4px}
+  .deliverables-card li em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400}
+  .deliverables-card li .desc{color:var(--gray);font-size:14px;line-height:1.55}
+  @media (max-width:680px){.deliverables-card{padding:28px 24px}}
+
+  /* Pricing */
+  .pricing{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px;align-items:start}
+  @media (max-width:760px){.pricing{grid-template-columns:1fr}}
+  .offer-card{background:#fff;border:1px solid var(--ink);border-radius:24px;padding:36px 32px;position:relative;box-shadow:0 1px 0 rgba(0,0,0,.04),0 24px 48px -28px rgba(11,16,32,.25)}
+  .offer-card .commit-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:5px 12px;border-radius:999px;
+    background:var(--yellow);color:var(--ink);
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;
+    margin-bottom:18px;
+  }
+  .offer-card .commit-pill::before{content:"✓";font-family:'Inter',sans-serif;font-weight:800}
+  .offer-card .stage-pill{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);margin-bottom:14px;font-weight:500}
+  .offer-card .stage-pill::before{content:"";width:8px;height:8px;border-radius:999px;background:var(--blue)}
+  .offer-card .name{font-family:'Inter',sans-serif;font-weight:800;font-size:26px;letter-spacing:-0.02em;color:var(--blue-dark);margin:0 0 8px;line-height:1.15}
+  .offer-card .name em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--ink);background:linear-gradient(180deg,transparent 65%,var(--yellow) 65%,var(--yellow) 92%,transparent 92%);padding:0 .04em}
+  .offer-card .for{font-size:14px;color:var(--gray);margin-bottom:24px;line-height:1.5}
+  .offer-card .price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+  .offer-card .price-row .num{font-family:'Inter',sans-serif;font-weight:800;font-size:42px;letter-spacing:-0.03em;color:var(--ink);line-height:1}
+  .offer-card .price-row .unit{font-size:14px;color:var(--gray)}
+  .offer-card .term{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:24px}
+  .offer-card .divider{height:1px;background:var(--line);margin:0 0 20px}
+  .offer-card .section-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);margin-bottom:12px}
+  .offer-card ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+  .offer-card li{font-size:14px;color:var(--ink);line-height:1.5;padding-left:20px;position:relative}
+  .offer-card li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:999px;background:var(--blue)}
+  .offer-card .pricing-tiers{margin-bottom:18px;padding:14px 16px;background:var(--bg-soft);border-radius:12px}
+  .offer-card .pricing-tiers .tier-line{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--ink);padding:5px 0}
+  .offer-card .pricing-tiers .tier-line:not(:last-child){border-bottom:1px solid var(--line)}
+  .offer-card .pricing-tiers .tier-line .what{font-weight:500}
+  .offer-card .pricing-tiers .tier-line .cost{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gray)}
+  .offer-card .pricing-tiers .tier-line.recommended .what::after{content:"recommended";margin-left:8px;background:var(--yellow);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:2px 6px;border-radius:999px;vertical-align:middle}
+
+  /* Recommended tag for top-of-card placement */
+  .offer-card .recommend-tag{
+    position:absolute;top:-12px;right:24px;
+    background:var(--ink);color:var(--yellow);
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    padding:7px 14px;border-radius:999px;font-weight:700;
+    z-index:3;display:inline-flex;align-items:center;gap:7px;
+    box-shadow:0 6px 20px -8px rgba(11,16,32,.4);
+  }
+  .offer-card .recommend-tag::before{content:"★";color:var(--yellow);font-size:11px;line-height:1}
+
+  /* Honest list */
+  .honest-list{margin-top:40px;display:flex;flex-direction:column;gap:0}
+  .honest-item{display:grid;grid-template-columns:64px 1fr;gap:24px;padding:28px 0;border-top:1px solid var(--line)}
+  .honest-item:last-child{border-bottom:1px solid var(--line)}
+  .honest-item .num{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:48px;line-height:1;color:var(--blue);letter-spacing:-0.02em}
+  .honest-item h3{font-family:'Inter',sans-serif;font-weight:700;font-size:20px;letter-spacing:-0.015em;color:var(--ink);margin:0 0 8px;line-height:1.3}
+  .honest-item h3 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;background:linear-gradient(180deg,transparent 65%,var(--yellow) 65%,var(--yellow) 92%,transparent 92%);padding:0 .04em}
+  .honest-item p{margin:0;font-size:16px;color:var(--gray);line-height:1.55;max-width:620px}
+  @media (max-width:680px){.honest-item{grid-template-columns:1fr;gap:8px}.honest-item .num{font-size:36px}}
+
+  .final{padding:80px 0 64px;text-align:left;border-bottom:none}
+  .final h2{margin-bottom:28px;max-width:780px}
+  .final .meta{margin-top:24px}
+
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gray)}
+  footer a{color:var(--gray);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:1px}
+  footer a:hover{color:var(--ink);border-color:var(--ink)}
+
+  /* ==== FONT / EMPHASIS FIX ==== */
+  /* Body em now stays in Inter (same family) and uses bold weight only (no font swap, no italic) */
+  p.body em{font-family:inherit;font-style:normal;font-weight:700;color:var(--ink);background:none;padding:0}
+
+  /* ==== BIG HERO PLATE ==== */
+  .hero-plate{margin-top:8px;padding:64px 56px 56px;background:var(--blue-dark);color:#fff;border-radius:32px;position:relative;overflow:hidden}
+  .hero-plate::before{content:"";position:absolute;top:-120px;right:-120px;width:360px;height:360px;background:radial-gradient(circle,rgba(221,255,77,0.18) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+  .hero-plate::after{content:"";position:absolute;bottom:-80px;left:-80px;width:260px;height:260px;background:radial-gradient(circle,rgba(61,104,245,0.4) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+  .hero-plate .partner-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;position:relative;z-index:1}
+  .hero-plate .partner{display:flex;align-items:center;gap:18px;font-family:'Inter',sans-serif;font-weight:800;letter-spacing:-0.02em;font-size:28px;color:#fff}
+  .hero-plate .partner .x-mark{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--yellow);font-size:32px;opacity:.8}
+  .hero-plate .partner .wonderful-mark{display:inline-flex;align-items:center;gap:10px}
+  .hero-plate .partner .wonderful-mark img.orb{width:28px;height:28px;border-radius:999px;display:block;flex-shrink:0}
+  .hero-plate .partner .wonderful-mark .wordmark-text{font-family:'Inter',sans-serif;font-weight:800;letter-spacing:-0.02em;color:#fff;line-height:1}
+  .hero-plate .partner-tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.7);padding:6px 12px;border:1px solid rgba(255,255,255,.18);border-radius:999px}
+
+  /* Outline pill — "What you'll cover" */
+  .hero-plate .outline-pill{
+    display:inline-flex;align-items:center;gap:12px;
+    margin-bottom:36px;padding:10px 18px;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:999px;
+    position:relative;z-index:1;
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:rgba(255,255,255,0.78);font-weight:500;
+  }
+  .hero-plate .outline-pill .outline-label{color:var(--yellow);font-weight:600}
+  .hero-plate .outline-pill .outline-sep{opacity:.32;margin:0 -2px}
+  .hero-plate .outline-pill .outline-jump{display:inline-flex;align-items:center;gap:6px;color:#fff}
+  .hero-plate .outline-pill .outline-jump .chev{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--yellow);font-size:14px;letter-spacing:0;text-transform:none}
+  @media (max-width:680px){.hero-plate .outline-pill{font-size:10px;letter-spacing:.1em;padding:8px 14px;gap:8px}}
+  .hero-plate .promise-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--yellow);margin-bottom:20px;position:relative;z-index:1;display:inline-flex;align-items:center;gap:10px}
+  .hero-plate .promise-label::before{content:"";width:24px;height:1px;background:var(--yellow);display:inline-block}
+  .hero-plate .big-promise{font-family:'Inter',sans-serif;font-weight:800;font-size:clamp(36px,5.5vw,64px);line-height:1.04;letter-spacing:-0.04em;color:#fff;margin:0 0 32px;position:relative;z-index:1;max-width:880px}
+  .hero-plate .big-promise .accent{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--yellow)}
+  .hero-plate .fine-print{font-size:16px;color:rgba(255,255,255,.78);max-width:640px;line-height:1.55;position:relative;z-index:1}
+  .hero-plate .fine-print strong{color:#fff;font-weight:600}
+  .hero-plate .for-line{margin-top:36px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);position:relative;z-index:1}
+  @media (max-width:680px){.hero-plate{padding:40px 28px 36px;border-radius:24px}.hero-plate .partner{font-size:22px}.hero-plate .partner .x-mark{font-size:24px}}
+
+  /* ==== SIDEBAR READING TIMES ==== */
+  .sidebar nav a .read-time{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.06em;color:var(--gray);font-weight:400;flex-shrink:0;margin-left:auto}
+  .sidebar nav a.active .read-time{color:var(--blue)}
+  .sidebar-total{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:18px;color:var(--ink);line-height:1.1;margin-bottom:4px}
+  .sidebar-total-sub{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+
+  /* ==== WHY NOW SECTION ==== */
+  .h3-emphasis{font-family:'Inter',sans-serif;font-weight:800;font-size:clamp(20px,2.4vw,26px);letter-spacing:-0.02em;color:var(--blue-dark);margin:40px 0 18px;line-height:1.25;max-width:780px}
+  .h3-emphasis em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--ink);background:linear-gradient(180deg,transparent 65%,var(--yellow) 65%,var(--yellow) 92%,transparent 92%);padding:0 .04em}
+
+  .lever-list{list-style:none;padding:0;margin:24px 0 0;display:flex;flex-direction:column;gap:18px;max-width:780px}
+  .lever-list li{position:relative;padding:22px 26px 22px 56px;background:#fff;border:1px solid var(--line);border-radius:16px;font-size:15.5px;color:var(--ink);line-height:1.55}
+  .lever-list li::before{content:"";position:absolute;left:22px;top:30px;width:8px;height:8px;border-radius:999px;background:var(--blue);box-shadow:0 0 0 4px rgba(61,104,245,.12)}
+  .lever-list li strong{font-weight:700;color:var(--ink)}
+
+  .market-grid{margin-top:28px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:780px}
+  .market-card{padding:24px 22px;background:var(--ink);color:#fff;border-radius:18px;position:relative;overflow:hidden}
+  .market-card::before{content:"";position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:radial-gradient(circle,rgba(221,255,77,0.10) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+  .market-card .market-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--yellow);margin-bottom:10px;font-weight:600;position:relative}
+  .market-card .market-stat{font-family:'Inter',sans-serif;font-weight:700;font-size:15px;letter-spacing:-0.01em;color:#fff;margin-bottom:10px;line-height:1.25;position:relative}
+  .market-card .market-body{font-size:13px;color:rgba(255,255,255,0.72);line-height:1.5;position:relative}
+  @media (max-width:760px){.market-grid{grid-template-columns:1fr}}
+
+  /* ==== COMPETITOR COMPARISON ==== */
+  .compare-block{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:780px}
+  .compare-card{padding:28px 28px 30px;border-radius:18px;border:1px solid var(--line);background:#fff;position:relative}
+  .compare-card.them{background:var(--bg-soft);border-style:dashed}
+  .compare-card.us{border-color:var(--ink);background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.04),0 12px 32px -20px rgba(11,16,32,.18)}
+  .compare-card .compare-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;font-weight:600}
+  .compare-card.them .compare-label{color:var(--gray)}
+  .compare-card.us .compare-label{color:var(--blue)}
+  .compare-card h4{font-family:'Inter',sans-serif;font-weight:800;font-size:18px;letter-spacing:-0.015em;color:var(--ink);margin:0 0 12px;line-height:1.25}
+  .compare-card.them h4{color:var(--gray)}
+  .compare-card h4 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;background:linear-gradient(180deg,transparent 65%,var(--yellow) 65%,var(--yellow) 92%,transparent 92%);padding:0 .04em}
+  .compare-card ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+  .compare-card li{font-size:14px;line-height:1.5;padding-left:18px;position:relative;color:var(--ink)}
+  .compare-card.them li{color:var(--gray)}
+  .compare-card.them li::before{content:"×";position:absolute;left:0;top:-1px;font-family:'Inter',sans-serif;font-weight:700;color:var(--gray);font-size:14px}
+  .compare-card.us li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:999px;background:var(--blue)}
+  @media (max-width:760px){.compare-block{grid-template-columns:1fr}}
+
+  /* ==== QUICK WIN / LONG GAME PRICING HEADERS ==== */
+  /* Dominant headline pair at the top of each card. Payment-type frame is the LEAD. */
+  .offer-card .card-framing{margin:-8px -4px 24px;padding:22px 24px 20px;background:var(--bg-soft);border-radius:16px;border:1px solid var(--line)}
+  .offer-card .card-framing-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:10px;font-weight:600}
+  .offer-card .card-framing-headline{font-family:'Inter',sans-serif;font-weight:900;font-size:34px;letter-spacing:-0.03em;color:var(--ink);line-height:1.05;margin:0 0 8px}
+  .offer-card .card-framing-headline em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;background:linear-gradient(180deg,transparent 65%,var(--yellow) 65%,var(--yellow) 92%,transparent 92%);padding:0 .04em}
+  /* The payment-type frame — the thing buyers must read FIRST */
+  .offer-card .card-framing-pay{font-family:'Inter',sans-serif;font-weight:800;font-size:18px;letter-spacing:-0.01em;color:var(--blue-dark);line-height:1.3;margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .offer-card .card-framing-pay .pay-icon{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--blue);font-size:20px;line-height:1}
+  .offer-card .card-framing-pay .pay-detail{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);font-weight:500}
+
+  .offer-card.is-quick-win{border-color:var(--blue)}
+  .offer-card.is-quick-win .card-framing{background:linear-gradient(180deg,rgba(221,255,77,0.22),rgba(221,255,77,0.05));border-color:rgba(221,255,77,0.6)}
+  .offer-card.is-quick-win .card-framing-eyebrow{color:var(--ink)}
+  .offer-card.is-quick-win .card-framing-pay{color:var(--ink)}
+  .offer-card.is-long-game{border-color:var(--ink)}
+  .offer-card.is-long-game .card-framing{background:var(--ink);border-color:var(--ink)}
+  .offer-card.is-long-game .card-framing-eyebrow{color:var(--yellow)}
+  .offer-card.is-long-game .card-framing-headline{color:#fff}
+  .offer-card.is-long-game .card-framing-pay{color:#fff}
+  .offer-card.is-long-game .card-framing-pay .pay-icon{color:var(--yellow)}
+  .offer-card.is-long-game .card-framing-pay .pay-detail{color:rgba(255,255,255,0.65)}
+
+  /* Pricing-section intro framing */
+  .pricing-frame{margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:780px}
+  .pricing-frame .pf-card{padding:22px 24px;border-radius:16px;background:var(--bg-soft);border:1px solid var(--line)}
+  .pricing-frame .pf-card .pf-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;font-weight:600}
+  .pricing-frame .pf-card .pf-title{font-family:'Inter',sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.02em;color:var(--ink);line-height:1.2;margin:0 0 6px}
+  .pricing-frame .pf-card .pf-title em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400}
+  .pricing-frame .pf-card .pf-sub{font-size:13px;color:var(--gray);line-height:1.5}
+  @media (max-width:760px){.pricing-frame{grid-template-columns:1fr}}
+
+  /* ==== FINAL CTA ==== */
+  .cta-row{margin-top:36px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .cta-btn{display:inline-flex;align-items:center;gap:10px;padding:18px 32px;background:var(--ink);color:#fff;border-radius:999px;font-family:'Inter',sans-serif;font-weight:600;font-size:16px;letter-spacing:-0.01em;text-decoration:none;border:1px solid var(--ink);transition:transform .15s ease,background .15s ease}
+  .cta-btn:hover{background:var(--blue-dark);border-color:var(--blue-dark);transform:translateY(-1px)}
+  .cta-btn .arrow{font-family:'Instrument Serif',serif;font-style:italic;font-size:20px;color:var(--yellow)}
+  .cta-btn-secondary{display:inline-flex;align-items:center;gap:10px;padding:18px 28px;background:transparent;color:var(--ink);border-radius:999px;font-family:'Inter',sans-serif;font-weight:500;font-size:15px;letter-spacing:-0.01em;text-decoration:none;border:1px solid var(--line);transition:border-color .15s}
+  .cta-btn-secondary:hover{border-color:var(--ink)}
+  .cta-note{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-top:18px}
+
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .hero .hero-plate{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+
+  /* Mobile: hide sidebar, show inline brand */
+  @media (max-width:1100px){
+    .page-layout{grid-template-columns:1fr}
+    .sidebar{display:none}
+    .brand-mobile{display:inline-flex}
+  }
+</style>
+</head>
+<body>
+
+<div class="page-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand"><span class="dot"></span>RallyUp</div>
+    <div class="sidebar-sub">Wonderful · Q2 2026</div>
+    <div class="sidebar-label">In this proposal</div>
+    <div class="sidebar-total">~11 min read</div>
+    <div class="sidebar-total-sub">11 sections</div>
+    <nav>
+      <a href="#opening"><span class="num">01</span><span class="label">Opening</span><span class="read-time">1 min</span></a>
+      <a href="#gap"><span class="num">02</span><span class="label">The gap</span><span class="read-time">1 min</span></a>
+      <a href="#principle"><span class="num">03</span><span class="label">The principle</span><span class="read-time">1 min</span></a>
+      <a href="#whynow"><span class="num">04</span><span class="label">Why now</span><span class="read-time">1 min</span></a>
+      <a href="#compare"><span class="num">05</span><span class="label">Vs the rest</span><span class="read-time">1 min</span></a>
+      <a href="#proposal"><span class="num">06</span><span class="label">The proposal</span><span class="read-time">1 min</span></a>
+      <a href="#authority"><span class="num">07</span><span class="label">State of Authority</span><span class="read-time">1 min</span></a>
+      <a href="#pilot"><span class="num">08</span><span class="label">Omer Pilot</span><span class="read-time">1 min</span></a>
+      <a href="#pricing"><span class="num">09</span><span class="label">Pricing</span><span class="read-time">2 min</span></a>
+      <a href="#honest"><span class="num">10</span><span class="label">What's true</span><span class="read-time">1 min</span></a>
+      <a href="#next"><span class="num">11</span><span class="label">Next step</span><span class="read-time">30s</span></a>
+    </nav>
+    <div class="progress-block">
+      <div class="progress-text"><span>Progress</span><span class="pct">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill"></div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="wrap">
+      <header class="top">
+        <div class="brand-mobile"><span class="dot"></span>RallyUp</div>
+        <div class="meta">Proposal · Q2 2026</div>
+        <div class="for-brand" aria-label="Prepared for Wonderful">
+          <img class="for-brand-orb" src="assets/wonderful-logo-2.png" alt="" />
+          <span class="for-brand-label">For</span>
+          <span class="for-brand-name">Wonderful</span>
+        </div>
+      </header>
+    </div>
+
+    <div class="wrap">
+      <section id="opening" class="hero">
+        <div class="hero-plate">
+          <div class="partner-row">
+            <div class="partner">
+              RallyUp <span class="x-mark">×</span>
+              <span class="wonderful-mark">
+                <img class="orb" src="assets/wonderful-logo-2.png" alt="" />
+                <span class="wordmark-text">Wonderful</span>
+              </span>
+            </div>
+            <div class="partner-tag">Proposal · Q2 2026</div>
+          </div>
+
+          <div class="outline-pill" aria-label="Proposal outline">
+            <span class="outline-label">What you'll cover</span>
+            <span class="outline-sep">·</span>
+            <span>11 sections</span>
+            <span class="outline-sep">·</span>
+            <span>~11 min read</span>
+            <span class="outline-sep">·</span>
+            <span class="outline-jump">jump to any section in the sidebar <span class="chev">→</span></span>
+          </div>
+
+          <div class="promise-label">The thesis</div>
+          <h1 class="big-promise">Wonderful's GMs are <span class="accent">the brand</span>. The product is global. The trust is local.</h1>
+          <p class="fine-print"><strong>The GMs are the human face of Wonderful's whole thesis.</strong> They're the ones telco execs in Greece and bank CFOs in Italy actually trust to deliver. Their personal brands aren't a nice-to-have. They're a defensible moat.</p>
+
+          <div class="for-line">Prepared for Ilan and the Wonderful brand team · By Alec Kremins, RallyUp</div>
+        </div>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <section id="gap">
+        <div class="eyebrow">Where you're at</div>
+        <h2>Some GMs are silent. Others post a lot, but <em>about the wrong things</em>.</h2>
+        <p class="body">You said it on the call: there are GMs at Wonderful posting frequently and getting 600 likes on takes that have nothing to do with what Wonderful actually does. Vanity engagement on off-brand content. The instinct is right to push back on it. <strong>Engagement that doesn't reach your ICP isn't just useless. It can dilute the brand.</strong></p>
+
+        <div class="pullquote">
+          <p>"It often borders a little bit on ridiculous/irrelevant. Despite the vanity metrics of impressions and likes, it's not something that's talking to your ICP."</p>
+          <cite>Ilan, on the call</cite>
+        </div>
+
+        <p class="body" style="margin-top:32px">On the other side, GMs like Omer have everything that makes a great brand voice (operator background, regional credibility, the kind of story that lands with enterprise buyers in their market) but aren't posting regularly. <strong>The opportunity is in the gap between those two groups.</strong> Not pushing the wrong people to do more, not silencing the wrong people, but figuring out who's sitting on the biggest unrealized leverage and unlocking exactly that.</p>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <section id="principle">
+        <div class="eyebrow">Our principle</div>
+        <h2>Audience relevance over <em>engagement vanity</em>.</h2>
+        <p class="body">Most ghostwriters optimize for likes. We optimize for the right eyes. Three hundred people from your ICP reading a thoughtful take on multilingual agent deployment in regulated industries beats six hundred unrelated likes on a brown-chair post every time. <strong>That's the principle this entire engagement is built on.</strong></p>
+
+        <div class="principle-card">
+          <div class="label">The metric we actually care about</div>
+          <div class="principle">An audience of <em>1,000 telco execs in Italy</em> is worth more than 100,000 random likes.</div>
+          <div class="sub">A real audience is the people who buy what you sell, the people who fund what you build, and the people you want to hire. We measure what we do against that bar, not against how the post performed in absolute numbers.</div>
+        </div>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <section id="whynow">
+        <div class="eyebrow">Where the leverage is</div>
+        <h2>The GMs are your biggest lever. <em>Time is the cost of waiting</em>.</h2>
+
+        <p class="body">You said it on the call: "Wonderful's GMs are the brand. The product is global. The trust is local." Everything that makes Wonderful different in a buying conversation runs through the GM in the room. Not the product page. Not the press release. The named operator standing in the market the buyer cares about.</p>
+
+        <h3 class="h3-emphasis">Why the GM is the lever, structurally.</h3>
+
+        <ul class="lever-list">
+          <li><strong>They are the only differentiator that compounds.</strong> A product feature ships once. A press release runs once. A GM posting in the buyer's language for 9 months builds a body of work the buyer can search, validate, and route around their own gatekeepers.</li>
+          <li><strong>They are the only differentiator competitors can't acquire.</strong> Software gets cloned, geographic presence gets bought, partnerships get matched. A real person with credibility in one market, posting in their voice, is the one moat that doesn't transfer with a check.</li>
+          <li><strong>They are the only differentiator that scales without diluting.</strong> A central marketing voice gets thinner with every market it enters. 25 GMs each owning their market is the opposite. Wonderful gets sharper in every conversation it shows up in.</li>
+        </ul>
+
+        <h3 class="h3-emphasis">And every dimension competitors <em>can</em> buy, they're buying. Fast.</h3>
+
+        <p class="body">The reason time matters isn't pressure from us. It's that every other layer of Wonderful's positioning is consolidating around you while you wait.</p>
+
+        <div class="market-grid">
+          <div class="market-card">
+            <div class="market-eyebrow">Sierra AI</div>
+            <div class="market-stat">$950M Series E · May 2026</div>
+            <div class="market-body">Tripled to $15B. Acquired Opera Tech (Tokyo, Mar 2026) and Fragment (Paris, Apr 2026) in 60 days. Geographic presence is now buyable on a quarterly cadence.</div>
+          </div>
+          <div class="market-card">
+            <div class="market-eyebrow">PolyAI</div>
+            <div class="market-stat">2,000+ deployments · 45 languages · 25+ countries</div>
+            <div class="market-body">Series D Dec 2025 at $750M. The multilingual benchmark is now at parity with Wonderful's own marketing. Language coverage isn't differentiation by itself anymore.</div>
+          </div>
+          <div class="market-card">
+            <div class="market-eyebrow">Cognigy (NICE)</div>
+            <div class="market-stat">25,000+ enterprise customers, distributed</div>
+            <div class="market-body">NICE acquisition closed Sep 2025. Cognigy now plugs into every existing CXone relationship. Greenfield enterprise wins face louder competition every quarter.</div>
+          </div>
+        </div>
+
+        <p class="body" style="margin-top:32px">In 6 months, "we have a Tokyo office" won't differentiate Wonderful from Sierra. "We support 30+ languages" won't differentiate Wonderful from PolyAI. "We sell to enterprise" won't differentiate Wonderful from a Cognigy/NICE bundle. <strong>What will still differentiate is the GM the buyer searches for and finds with 9 months of pointed, in-language, in-market posting behind them.</strong></p>
+
+        <div class="pullquote">
+          <p>The GM moat is the one that doesn't expire. It's also the one that compounds with time. The case for moving now is just that the time only works one way.</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <section id="compare">
+        <div class="eyebrow">Vs the rest of the market</div>
+        <h2>What most LinkedIn ghostwriters sell. <em>And what we don't</em>.</h2>
+        <p class="body">The category is crowded with agencies optimizing for what's easy to measure: likes, impressions, follower count. That's how you end up with brown-chair posts and 600 likes from people who'll never buy from Wonderful. <strong>Here's the actual difference, side by side.</strong></p>
+
+        <div class="compare-block">
+          <div class="compare-card them">
+            <div class="compare-label">Most ghostwriting agencies</div>
+            <h4>Sell engagement. <em>Measure vanity</em>.</h4>
+            <ul>
+              <li>Hooks engineered for likes, regardless of audience fit</li>
+              <li>Generic operator-life takes (the brown-chair post genre)</li>
+              <li>Reporting based on impressions and follower count</li>
+              <li>Fixed retainer, auto-renewal, exit clauses you have to fight</li>
+              <li>Every client sounds the same after 4 weeks</li>
+            </ul>
+          </div>
+          <div class="compare-card us">
+            <div class="compare-label">RallyUp</div>
+            <h4>Sell <em>audience relevance</em>. Measure who's reading.</h4>
+            <ul>
+              <li>Posts written for the buyers, funders, and hires you actually want</li>
+              <li>Industry-native takes on Wonderful's category, not LinkedIn-bait</li>
+              <li>Research agents surfacing the hottest trends in your category, so GMs chime in with relevance, not noise</li>
+              <li>One-time blueprint or 3-month max pilot, no auto-renewal, no clauses</li>
+              <li>Voice node per GM, synced to your evolving brand guidelines</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <section id="proposal">
+        <div class="eyebrow">The proposal, in two stages</div>
+        <h2>Strategy first. <em>Pilot second</em>.</h2>
+        <p class="body">You're still crystallizing the broader content strategy across 25 GMs, just hired a new Head of Brand, and don't want to commit to anything ongoing until you have data. So we built this in two stages. <strong>Stage one is the strategic blueprint. Stage two proves it works in market.</strong></p>
+
+        <div class="stages">
+          <div class="stage">
+            <div class="stage-num">Stage 1</div>
+            <h3>The <em>State of Authority</em></h3>
+            <div class="what">A per-GM strategic blueprint. The thesis, the narrative arc, the audience plan, the playbook. The strategy we'd run if you hired us, written down so you can run it yourself.</div>
+            <div class="stage-tagline">$599 per GM · One-time fee</div>
+          </div>
+          <div class="stage">
+            <div class="stage-num">Stage 2</div>
+            <h3>The <em>pilot with Omer</em></h3>
+            <div class="what">3-month managed engagement starting with one GM. Real posts, real audience growth, real data before any wider rollout.</div>
+            <div class="stage-tagline">$2,000/month · 3-month max</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <section id="authority">
+        <div class="eyebrow">Stage 1, in detail</div>
+        <h2>What's in your <em>State of Authority</em>.</h2>
+        <p class="body">Per GM, you get a complete strategic blueprint. The thesis. The narrative arc. The audience plan. The playbook. Everything you'd need to either run their brand in-house or hand it to us. <strong>It's not a diagnosis of what's wrong. It's the path forward, mapped.</strong> Designed to be read in 15 minutes by your new Head of Brand and to inform the broader strategy across all 25 GMs.</p>
+
+        <div class="deliverables-card">
+          <div class="label">What you'll have, per GM</div>
+          <ul>
+            <li><strong>The authority thesis</strong>
+              <span class="desc">In one sentence, the territory this GM should uniquely own. The ground we'd plant their flag in.</span>
+            </li>
+            <li><strong>The 90-day narrative arc</strong>
+              <span class="desc">The storyline we'd build week by week. Where we start, what compounds, how it lands in their market.</span>
+            </li>
+            <li><strong>Spheres of authority</strong>
+              <span class="desc">The 3-5 territories where their voice has natural leverage. Where their operator background, regional credibility, and Wonderful's category overlap.</span>
+            </li>
+            <li><strong>ICP audience strategy</strong>
+              <span class="desc">Who we're building the audience toward. The composition target at 90 days, 6 months, 12 months. How we get there.</span>
+            </li>
+            <li><strong>Hero angles, drafted</strong>
+              <span class="desc">5 specific stories or takes we'd lead with. Hooks written so you can hear the voice. Ready to test in week one.</span>
+            </li>
+            <li><strong>Cross-GM positioning</strong>
+              <span class="desc">How this GM fits the wider Wonderful brand system. The lanes they own versus the other 24. Where to differentiate, where to consolidate.</span>
+            </li>
+            <li><strong>The 90-day pilot playbook</strong>
+              <span class="desc">The exact execution plan. Cadence, formats, distribution, approval flow. What we'd ship in week one, week four, week twelve.</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <section id="pilot">
+        <div class="eyebrow">Stage 2, in detail</div>
+        <h2>What the pilot with <em>Omer</em> looks like.</h2>
+        <p class="body">3 months. One GM. Real posts in his voice, on industry trends and Wonderful's narrative, not webinar announcements. We work in Slack with you and Omer. Five-minute approvals. Same approach we used to take PandaDoc's CEO from 2,500 to 90,000 monthly impressions in 35 days.</p>
+
+        <div class="pillars">
+          <div class="pillar">
+            <div class="num">01</div>
+            <h3>LinkedIn craft</h3>
+            <p>Hooks that land in enterprise feeds. Storylines that hold. Format choices the algorithm currently rewards. We write to <em>this</em> medium specifically.</p>
+          </div>
+          <div class="pillar">
+            <div class="num">02</div>
+            <h3>Wonderful's narrative</h3>
+            <p>Multilingual AI agents, deployment in regulated markets, the strategic case for culturally fluent automation. Day-one fluency in your category and your brand voice.</p>
+          </div>
+          <div class="pillar">
+            <div class="num">03</div>
+            <h3>Omer's voice</h3>
+            <p>Operator background, regional credibility, his actual perspective. Not generic CEO. Not ChatGPT. Him. Five-minute Slack approvals, brand guidelines respected, no emojis or italics.</p>
+          </div>
+        </div>
+
+        <p class="body" style="margin-top:40px">Posts ship through Slack each week. Omer approves in five minutes. You see everything before it goes live. <strong>The voice node in our context graph stays in sync with your evolving brand guidelines</strong>, which means when you update the messaging, every future post inherits the change automatically.</p>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <section id="pricing">
+        <div class="eyebrow">The pricing</div>
+        <h2>Two ways in. <em>Where we'd start: the Omer pilot</em>.</h2>
+        <p class="body">Before the numbers: the framing matters more than the line items. One option is a one-time payment, yours to act on however you want. The other is a fixed 3-month engagement with a hard cap. <strong>If we were placing the bet, we'd run the Omer pilot. Real posts in market, real evidence in 90 days, a clean exit if it doesn't work.</strong> Neither is a retainer. Neither auto-renews. Pick one. Or both. Or neither.</p>
+
+        <div class="pricing-frame">
+          <div class="pf-card">
+            <div class="pf-eyebrow">Option A</div>
+            <div class="pf-title">The Quick Win</div>
+            <div class="pf-sub">One-time payment · The strategic blueprint, yours to run with us or without us</div>
+          </div>
+          <div class="pf-card">
+            <div class="pf-eyebrow">Option B</div>
+            <div class="pf-title">The Long Game</div>
+            <div class="pf-sub">3 months managed · Then a clean exit or a clear extension. No auto-renewal.</div>
+          </div>
+        </div>
+
+        <div class="pricing">
+          <div class="offer-card is-quick-win">
+            <div class="card-framing">
+              <div class="card-framing-eyebrow">Option A · Stage 1 · State of Authority</div>
+              <h3 class="card-framing-headline">Quick Win</h3>
+              <div class="card-framing-pay"><span class="pay-icon">●</span>One-time payment <span class="pay-detail">· no retainer · no follow-up commitment</span></div>
+            </div>
+            <h3 class="name"><em>Strategic blueprint, per GM</em></h3>
+            <div class="for">Modular pricing, $599 per GM. We recommend starting with 3 (the highest-leverage candidates from the call: Omer, Eve, Gonzalo).</div>
+
+            <div class="pricing-tiers">
+              <div class="tier-line">
+                <span class="what">1 GM</span>
+                <span class="cost">$599</span>
+              </div>
+              <div class="tier-line">
+                <span class="what">3 GMs</span>
+                <span class="cost">$1,797</span>
+              </div>
+              <div class="tier-line">
+                <span class="what">5 GMs</span>
+                <span class="cost">$2,995</span>
+              </div>
+            </div>
+
+            <div class="term">Delivered in 7 days · Yours to act on</div>
+
+            <div class="divider"></div>
+
+            <div class="section-label">What you get</div>
+            <ul>
+              <li>One strategic blueprint per GM (see Stage 1 detail above)</li>
+              <li>The unlock recommendation: which GM, why, what to do</li>
+              <li>30-min walkthrough call with Alec when delivered</li>
+              <li>Yours to use internally, with us or without us</li>
+            </ul>
+          </div>
+
+          <div class="offer-card is-long-game">
+            <div class="recommend-tag">Where we'd start</div>
+            <div class="card-framing">
+              <div class="card-framing-eyebrow">Option B · Stage 2 · Omer Pilot</div>
+              <h3 class="card-framing-headline">Long Game</h3>
+              <div class="card-framing-pay"><span class="pay-icon">●</span>Ongoing engagement · recurring fee <span class="pay-detail">· 3-month hard cap · no auto-renewal</span></div>
+            </div>
+            <h3 class="name"><em>One GM, in market, with real posts</em></h3>
+            <div class="for">Real posts in Omer's voice, on Wonderful's narrative, written for the buyers and hires you actually want.</div>
+
+            <div class="price-row">
+              <span class="num">$2,000</span>
+              <span class="unit">/month</span>
+            </div>
+            <div class="term">$6,000 total over 3 months · Cancel anytime, no penalty</div>
+
+            <div class="divider"></div>
+
+            <div class="section-label">What you get</div>
+            <ul>
+              <li>Up to 3 fully managed posts per week (or fewer if Omer prefers)</li>
+              <li>Weekly Slack delivery, 5 minutes for Omer to approve</li>
+              <li>Direct Slack integration with you and Omer</li>
+              <li>Voice node syncs to your evolving brand guidelines</li>
+              <li>Monthly analytics: impressions, follower growth, top-performing posts</li>
+              <li>Research agents surfacing the hottest trends in your category for Omer to chime in on</li>
+              <li>Personal Brand Audit and Context Graph build, no extra charge</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <section id="honest">
+        <div class="eyebrow">What's true. What isn't.</div>
+        <h2>The part most agencies <em>bury in the contract</em>.</h2>
+        <p class="body">Three things worth being upfront about before signing.</p>
+
+        <div class="honest-list">
+          <div class="honest-item">
+            <div class="num">01</div>
+            <div>
+              <h3>The State of Authority isn't a sales tool. <em>It's a real product</em>.</h3>
+              <p>You can read it, take the recommendation internally, and never speak to us again. We've priced it to stand on its own. If we do this part well, the pilot becomes the obvious next step. If we don't, you've paid $599 per GM for a strategic blueprint you can act on yourself.</p>
+            </div>
+          </div>
+
+          <div class="honest-item">
+            <div class="num">02</div>
+            <div>
+              <h3>We write for ICP relevance, <em>not vanity metrics</em>.</h3>
+              <p>We won't celebrate 600 likes on a brown-chair post. The whole point is that your ICP follows Omer and trusts him. That's a slower curve than chasing engagement spikes, and it's the curve that compounds into real pipeline, hires, and brand authority. Every post we ship is built for who you want reading it, not for raw reach.</p>
+            </div>
+          </div>
+
+          <div class="honest-item">
+            <div class="num">03</div>
+            <div>
+              <h3>After 90 days, <em>no strings</em>.</h3>
+              <p>If the pilot is working, we expand to other GMs. If it isn't, we don't fight to keep you. You keep every post, the voice node, the context graph, and the playbook for running it in-house. The 90 days are structured so you can make the call with real data, not vibes.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <section id="next" class="final">
+        <div class="eyebrow">Next step</div>
+        <h2>Reply. <em>We onboard within 7 days</em>.</h2>
+        <p class="body">Reply with which option you want. We onboard within 7 days. No kickoff call to schedule, no contract dance, just a reply and we're in motion.</p>
+
+        <div class="cta-row">
+          <a class="cta-btn" href="mailto:alec@rallyup.team?subject=Wonderful%20%C2%B7%20Let%27s%20run%20the%20Omer%20pilot&body=Alec%2C%20we%27re%20in%20for%20the%20Omer%20pilot.%20Send%20over%20what%20you%20need%20to%20onboard.">Reply and we onboard the Omer pilot within 7 days <span class="arrow">→</span></a>
+          <a class="cta-btn-secondary" href="mailto:alec@rallyup.team?subject=Wonderful%20%C2%B7%20Start%20with%20the%20blueprints&body=Alec%2C%20let%27s%20start%20with%20the%20State%20of%20Authority%20blueprints.%20Send%20over%20what%20you%20need.">Prefer the blueprints first? Same 7 days, same reply.</a>
+        </div>
+        <div class="cta-note">7 days from your reply to first delivery · No auto-renewal, no retainer, no exit clauses</div>
+
+        <div class="meta" style="margin-top:32px">Prepared by Alec Kremins, CEO, RallyUp</div>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <footer>
+        <div>RallyUp · State of Authority + Pilot</div>
+        <div><a href="https://www.rallyup.team" target="_blank" rel="noopener">rallyup.team</a></div>
+      </footer>
+    </div>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  const links = Array.from(document.querySelectorAll('.sidebar nav a'));
+  const fill = document.querySelector('.progress-fill');
+  const pctEl = document.querySelector('.progress-text .pct');
+
+  function update(){
+    const scrollY = window.scrollY;
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docH > 0 ? Math.min(100, Math.max(0, (scrollY / docH) * 100)) : 0;
+
+    if (fill) fill.style.width = pct + '%';
+    if (pctEl) pctEl.textContent = Math.round(pct) + '%';
+
+    // Active section: last one whose top is above the 25% line
+    const triggerY = scrollY + window.innerHeight * 0.25;
+    let active = sections[0];
+    for (const s of sections){
+      if (s.offsetTop <= triggerY) active = s;
+    }
+    if (active){
+      links.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + active.id);
+      });
+    }
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  window.addEventListener('load', update);
+  update();
+})();
+</script>
+
+</body>
+</html>
